@@ -13,15 +13,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
-                Picker("模式", selection: modeBinding) {
-                    ForEach(FeedScreenViewModel.ProviderMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-
                 content
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -39,17 +30,6 @@ struct ContentView: View {
                 )
             }
         }
-    }
-
-    private var modeBinding: Binding<FeedScreenViewModel.ProviderMode> {
-        Binding(
-            get: { viewModel.providerMode },
-            set: { newValue in
-                Task {
-                    await viewModel.changeMode(to: newValue)
-                }
-            }
-        )
     }
 
     @ViewBuilder
@@ -84,7 +64,9 @@ struct ContentView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.items) { item in
-                        item.render()
+                        FeedRowView(row: item, onAction: { action in
+                            viewModel.send(action)
+                        })
                             .onAppear {
                                 Task {
                                     await viewModel.loadMoreIfNeeded(currentItemID: item.id)

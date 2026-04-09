@@ -1,4 +1,4 @@
-internal import SwiftUI
+import Foundation
 
 extension FeedItem {
     static func decode(from decoder: Decoder) throws -> FeedItem {
@@ -34,53 +34,16 @@ extension FeedItem {
         }
     }
 
-    func makeTextCardItem(textCallbacks: TextCardCallbacks? = nil) -> AnyCardItem {
-        guard case .text(let model) = self else {
-            preconditionFailure("makeTextCardItem can only be used with .text")
-        }
-        let row = TextRowModel(
-            dto: model,
-            onTapTitle: {
-                textCallbacks?.onTitleTap?(model.id)
-            },
-            onTapSubtitle: {
-                textCallbacks?.onSubtitleTap?(model.id)
-            }
-        )
-        return AnyCardItem(id: "text-\(model.id)", typeKey: "text") {
-            TextCardRowView(model: row)
-        }
-    }
-
-    func makeImageCardItem(imageEventHandler: ImageCardEventHandler? = nil) -> AnyCardItem {
-        guard case .image(let model) = self else {
-            preconditionFailure("makeImageCardItem can only be used with .image")
-        }
-        let row = ImageRowModel(dto: model, onEvent: { event in
-            imageEventHandler?.onEvent?(model.id, event)
-        })
-        return AnyCardItem(id: "image-\(model.id)", typeKey: "image") {
-            ImageCardRowView(model: row)
-        }
-    }
-
-    func makeActionCardItem(actionDelegate: ActionCardEventDelegate? = nil) -> AnyCardItem {
-        guard case .action(let model) = self else {
-            preconditionFailure("makeActionCardItem can only be used with .action")
-        }
-        let row = ActionRowModel(dto: model, delegate: actionDelegate)
-        return AnyCardItem(id: "action-\(model.id)", typeKey: "action") {
-            ActionCardRowView(model: row)
-        }
-    }
-
-    func makeProfileCardItem(profileDelegate: ProfileCardEventDelegate? = nil) -> AnyCardItem {
-        guard case .profile(let model) = self else {
-            preconditionFailure("makeProfileCardItem can only be used with .profile")
-        }
-        let row = ProfileRowModel(dto: model, delegate: profileDelegate)
-        return AnyCardItem(id: "profile-\(model.id)", typeKey: "profile") {
-            ProfileCardRowView(model: row)
+    func makeRow() -> FeedRow {
+        switch self {
+        case .text(let model):
+            return .text(TextRowModel(dto: model))
+        case .image(let model):
+            return .image(ImageRowModel(dto: model))
+        case .action(let model):
+            return .action(ActionRowModel(dto: model))
+        case .profile(let model):
+            return .profile(ProfileRowModel(dto: model))
         }
     }
 }

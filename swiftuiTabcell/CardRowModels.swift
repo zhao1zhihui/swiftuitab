@@ -1,65 +1,73 @@
 import Foundation
 
-final class TextRowModel {
+struct TextRowModel {
     let id: Int
     let title: String
     let subtitle: String?
-    let onTapTitle: (() -> Void)?
-    let onTapSubtitle: (() -> Void)?
 
-    init(dto: TextCard,
-         onTapTitle: (() -> Void)? = nil,
-         onTapSubtitle: (() -> Void)? = nil) {
+    init(dto: TextCard) {
         self.id = dto.id
         self.title = dto.title
         self.subtitle = dto.subtitle
-        self.onTapTitle = onTapTitle
-        self.onTapSubtitle = onTapSubtitle
     }
 }
 
-final class ImageRowModel {
+struct ImageRowModel {
     let id: Int
     let title: String
     let imageUrl: String
-    let onEvent: ((ImageRowEvent) -> Void)?
 
-    init(dto: ImageCard, onEvent: ((ImageRowEvent) -> Void)? = nil) {
+    init(dto: ImageCard) {
         self.id = dto.id
         self.title = dto.title
         self.imageUrl = dto.imageUrl
-        self.onEvent = onEvent
     }
 }
 
-final class ActionRowModel {
+struct ActionRowModel {
     let id: Int
     let title: String
     let buttonTitle: String
-    weak var delegate: ActionCardEventDelegate?
 
-    init(dto: ActionCard, delegate: ActionCardEventDelegate? = nil) {
+    init(dto: ActionCard) {
         self.id = dto.id
         self.title = dto.title
         self.buttonTitle = dto.buttonTitle
-        self.delegate = delegate
     }
 }
 
-final class ProfileRowModel {
+struct ProfileRowModel {
     let id: Int
     let name: String
     let intro: String
     let followTitle: String
     let messageTitle: String
-    weak var delegate: ProfileCardEventDelegate?
 
-    init(dto: ProfileCard, delegate: ProfileCardEventDelegate? = nil) {
+    init(dto: ProfileCard) {
         self.id = dto.id
         self.name = dto.name
         self.intro = dto.intro
         self.followTitle = dto.followTitle
         self.messageTitle = dto.messageTitle
-        self.delegate = delegate
+    }
+}
+
+enum FeedRow: Identifiable {
+    case text(TextRowModel)
+    case image(ImageRowModel)
+    case action(ActionRowModel)
+    case profile(ProfileRowModel)
+
+    var id: String {
+        switch self {
+        case .text(let model):
+            return "text-\(model.id)"
+        case .image(let model):
+            return "image-\(model.id)"
+        case .action(let model):
+            return "action-\(model.id)"
+        case .profile(let model):
+            return "profile-\(model.id)"
+        }
     }
 }

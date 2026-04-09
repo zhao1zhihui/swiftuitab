@@ -20,6 +20,7 @@ private struct CardContainer<Content: View>: View {
 
 struct TextCardRowView: View {
     let model: TextRowModel
+    let onAction: (FeedAction) -> Void
 
     var body: some View {
         CardContainer {
@@ -27,7 +28,7 @@ struct TextCardRowView: View {
                 Text(model.title)
                     .font(.headline)
                     .onTapGesture {
-                        model.onTapTitle?()
+                        onAction(.tapTextTitle(id: model.id))
                     }
 
                 if let subtitle = model.subtitle {
@@ -35,7 +36,7 @@ struct TextCardRowView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .onTapGesture {
-                            model.onTapSubtitle?()
+                            onAction(.tapTextSubtitle(id: model.id))
                         }
                 }
             }
@@ -45,6 +46,7 @@ struct TextCardRowView: View {
 
 struct ImageCardRowView: View {
     let model: ImageRowModel
+    let onAction: (FeedAction) -> Void
 
     var body: some View {
         CardContainer {
@@ -52,12 +54,12 @@ struct ImageCardRowView: View {
                 Text(model.title)
                     .font(.headline)
                     .onTapGesture {
-                        model.onEvent?(.tapTitle)
+                        onAction(.tapImageTitle(id: model.id))
                     }
 
                 imageContent
                     .onTapGesture {
-                        model.onEvent?(.tapImage)
+                        onAction(.tapImage(id: model.id))
                     }
 
                 Text(model.imageUrl)
@@ -65,7 +67,7 @@ struct ImageCardRowView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
                     .onTapGesture {
-                        model.onEvent?(.tapURL)
+                        onAction(.tapImageURL(id: model.id))
                     }
             }
         }
@@ -106,6 +108,7 @@ struct ImageCardRowView: View {
 
 struct ActionCardRowView: View {
     let model: ActionRowModel
+    let onAction: (FeedAction) -> Void
 
     var body: some View {
         CardContainer {
@@ -114,11 +117,11 @@ struct ActionCardRowView: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .onTapGesture {
-                        model.delegate?.actionCardDidTapTitle(id: model.id)
+                        onAction(.tapActionTitle(id: model.id))
                     }
 
                 Button(model.buttonTitle) {
-                    model.delegate?.actionCardDidTapButton(id: model.id)
+                    onAction(.tapActionButton(id: model.id))
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -128,6 +131,7 @@ struct ActionCardRowView: View {
 
 struct ProfileCardRowView: View {
     let model: ProfileRowModel
+    let onAction: (FeedAction) -> Void
 
     var body: some View {
         CardContainer {
@@ -135,7 +139,7 @@ struct ProfileCardRowView: View {
                 Text(model.name)
                     .font(.headline)
                     .onTapGesture {
-                        model.delegate?.profileCardDidTapName(id: model.id)
+                        onAction(.tapProfileName(id: model.id))
                     }
 
                 Text(model.intro)
@@ -144,16 +148,39 @@ struct ProfileCardRowView: View {
 
                 HStack(spacing: 12) {
                     Button(model.followTitle) {
-                        model.delegate?.profileCardDidTapFollow(id: model.id)
+                        onAction(.tapProfileFollow(id: model.id))
                     }
                     .buttonStyle(.borderedProminent)
 
                     Button(model.messageTitle) {
-                        model.delegate?.profileCardDidTapMessage(id: model.id)
+                        onAction(.tapProfileMessage(id: model.id))
                     }
                     .buttonStyle(.bordered)
                 }
             }
+        }
+    }
+}
+
+struct FeedRowView: View {
+    let row: FeedRow
+    let onAction: (FeedAction) -> Void
+
+    var body: some View {
+        content
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch row {
+        case .text(let model):
+            TextCardRowView(model: model, onAction: onAction)
+        case .image(let model):
+            ImageCardRowView(model: model, onAction: onAction)
+        case .action(let model):
+            ActionCardRowView(model: model, onAction: onAction)
+        case .profile(let model):
+            ProfileCardRowView(model: model, onAction: onAction)
         }
     }
 }

@@ -1,27 +1,14 @@
 import Foundation
 
-enum ImageRowEvent {
-    case tapTitle
-    case tapImage
-    case tapURL
-}
-
-struct TextCardCallbacks {
-    var onTitleTap: ((Int) -> Void)?
-    var onSubtitleTap: ((Int) -> Void)?
-}
-
-struct ImageCardEventHandler {
-    var onEvent: ((Int, ImageRowEvent) -> Void)?
-}
-
-protocol ActionCardEventDelegate: AnyObject {
-    func actionCardDidTapTitle(id: Int)
-    func actionCardDidTapButton(id: Int)
-}
-
-protocol ProfileCardEventDelegate: AnyObject {
-    func profileCardDidTapName(id: Int)
-    func profileCardDidTapFollow(id: Int)
-    func profileCardDidTapMessage(id: Int)
+enum FeedAction {
+    case tapTextTitle(id: Int)
+    case tapTextSubtitle(id: Int)
+    case tapImageTitle(id: Int)
+    case tapImage(id: Int)
+    case tapImageURL(id: Int)
+    case tapActionTitle(id: Int)
+    case tapActionButton(id: Int)
+    case tapProfileName(id: Int)
+    case tapProfileFollow(id: Int)
+    case tapProfileMessage(id: Int)
 }
