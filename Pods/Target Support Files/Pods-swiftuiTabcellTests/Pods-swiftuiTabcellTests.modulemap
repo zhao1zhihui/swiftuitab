@@ -1,0 +1,6 @@
+framework module Pods_swiftuiTabcellTests {
+  umbrella header "Pods-swiftuiTabcellTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

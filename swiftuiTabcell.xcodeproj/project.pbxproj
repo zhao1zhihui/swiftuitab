@@ -1,0 +1,744 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		55D39AB29787CAA1222BAD73 /* Pods_swiftuiTabcellTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37FF9E618C0B90C2C4C92DBE /* Pods_swiftuiTabcellTests.framework */; };
+		89A9B710FA1B0E126E1A20CC /* Pods_swiftuiTabcell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7109A5BB4DD074EA83295531 /* Pods_swiftuiTabcell.framework */; };
+		B2ADC4487C5106BBFA7D4A87 /* Pods_swiftuiTabcell_swiftuiTabcellUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70429E3902543DFF20AE4853 /* Pods_swiftuiTabcell_swiftuiTabcellUITests.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6D7DCD332F87741E00F32912 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D7DCD1D2F87741B00F32912 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D7DCD242F87741B00F32912;
+			remoteInfo = swiftuiTabcell;
+		};
+		6D7DCD3D2F87741E00F32912 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D7DCD1D2F87741B00F32912 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D7DCD242F87741B00F32912;
+			remoteInfo = swiftuiTabcell;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		085134269EBAEBF2A99156D6 /* Pods-swiftuiTabcell.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcell.release.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell.release.xcconfig"; sourceTree = "<group>"; };
+		37FF9E618C0B90C2C4C92DBE /* Pods_swiftuiTabcellTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_swiftuiTabcellTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DD0578710438489E24B11EA /* Pods-swiftuiTabcellTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcellTests.release.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcellTests/Pods-swiftuiTabcellTests.release.xcconfig"; sourceTree = "<group>"; };
+		3DEE68AAC1E2D82E57E06A6D /* Pods-swiftuiTabcellTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcellTests.debug.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcellTests/Pods-swiftuiTabcellTests.debug.xcconfig"; sourceTree = "<group>"; };
+		431CC2D43DD0B76C01811DEE /* Pods-swiftuiTabcell-swiftuiTabcellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcell-swiftuiTabcellUITests.debug.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		6D7DCD252F87741B00F32912 /* swiftuiTabcell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = swiftuiTabcell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D7DCD322F87741E00F32912 /* swiftuiTabcellTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = swiftuiTabcellTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D7DCD3C2F87741E00F32912 /* swiftuiTabcellUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = swiftuiTabcellUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		70429E3902543DFF20AE4853 /* Pods_swiftuiTabcell_swiftuiTabcellUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_swiftuiTabcell_swiftuiTabcellUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7109A5BB4DD074EA83295531 /* Pods_swiftuiTabcell.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_swiftuiTabcell.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		781223E9A9B58731E2B226F9 /* Pods-swiftuiTabcell-swiftuiTabcellUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcell-swiftuiTabcellUITests.release.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests.release.xcconfig"; sourceTree = "<group>"; };
+		B9AEFCFA03601274D75A8AA9 /* Pods-swiftuiTabcell.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swiftuiTabcell.debug.xcconfig"; path = "Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		6D7DCD272F87741B00F32912 /* swiftuiTabcell */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = swiftuiTabcell;
+			sourceTree = "<group>";
+		};
+		6D7DCD352F87741E00F32912 /* swiftuiTabcellTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = swiftuiTabcellTests;
+			sourceTree = "<group>";
+		};
+		6D7DCD3F2F87741E00F32912 /* swiftuiTabcellUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = swiftuiTabcellUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6D7DCD222F87741B00F32912 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				89A9B710FA1B0E126E1A20CC /* Pods_swiftuiTabcell.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD2F2F87741E00F32912 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55D39AB29787CAA1222BAD73 /* Pods_swiftuiTabcellTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD392F87741E00F32912 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2ADC4487C5106BBFA7D4A87 /* Pods_swiftuiTabcell_swiftuiTabcellUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		583391DC1F9F7320535302BF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7109A5BB4DD074EA83295531 /* Pods_swiftuiTabcell.framework */,
+				70429E3902543DFF20AE4853 /* Pods_swiftuiTabcell_swiftuiTabcellUITests.framework */,
+				37FF9E618C0B90C2C4C92DBE /* Pods_swiftuiTabcellTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6D7DCD1C2F87741B00F32912 = {
+			isa = PBXGroup;
+			children = (
+				6D7DCD272F87741B00F32912 /* swiftuiTabcell */,
+				6D7DCD352F87741E00F32912 /* swiftuiTabcellTests */,
+				6D7DCD3F2F87741E00F32912 /* swiftuiTabcellUITests */,
+				6D7DCD262F87741B00F32912 /* Products */,
+				FDF0C763FB9457B72C1D9FA3 /* Pods */,
+				583391DC1F9F7320535302BF /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		6D7DCD262F87741B00F32912 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6D7DCD252F87741B00F32912 /* swiftuiTabcell.app */,
+				6D7DCD322F87741E00F32912 /* swiftuiTabcellTests.xctest */,
+				6D7DCD3C2F87741E00F32912 /* swiftuiTabcellUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FDF0C763FB9457B72C1D9FA3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B9AEFCFA03601274D75A8AA9 /* Pods-swiftuiTabcell.debug.xcconfig */,
+				085134269EBAEBF2A99156D6 /* Pods-swiftuiTabcell.release.xcconfig */,
+				431CC2D43DD0B76C01811DEE /* Pods-swiftuiTabcell-swiftuiTabcellUITests.debug.xcconfig */,
+				781223E9A9B58731E2B226F9 /* Pods-swiftuiTabcell-swiftuiTabcellUITests.release.xcconfig */,
+				3DEE68AAC1E2D82E57E06A6D /* Pods-swiftuiTabcellTests.debug.xcconfig */,
+				3DD0578710438489E24B11EA /* Pods-swiftuiTabcellTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6D7DCD242F87741B00F32912 /* swiftuiTabcell */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D7DCD462F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcell" */;
+			buildPhases = (
+				BEBB2A4F917A59186D7EB665 /* [CP] Check Pods Manifest.lock */,
+				6D7DCD212F87741B00F32912 /* Sources */,
+				6D7DCD222F87741B00F32912 /* Frameworks */,
+				6D7DCD232F87741B00F32912 /* Resources */,
+				49B86F61CC517EAF22BCF608 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				6D7DCD272F87741B00F32912 /* swiftuiTabcell */,
+			);
+			name = swiftuiTabcell;
+			productName = swiftuiTabcell;
+			productReference = 6D7DCD252F87741B00F32912 /* swiftuiTabcell.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6D7DCD312F87741E00F32912 /* swiftuiTabcellTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D7DCD492F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcellTests" */;
+			buildPhases = (
+				4F7A8A9C826D7471610B7238 /* [CP] Check Pods Manifest.lock */,
+				6D7DCD2E2F87741E00F32912 /* Sources */,
+				6D7DCD2F2F87741E00F32912 /* Frameworks */,
+				6D7DCD302F87741E00F32912 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6D7DCD342F87741E00F32912 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6D7DCD352F87741E00F32912 /* swiftuiTabcellTests */,
+			);
+			name = swiftuiTabcellTests;
+			productName = swiftuiTabcellTests;
+			productReference = 6D7DCD322F87741E00F32912 /* swiftuiTabcellTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6D7DCD3B2F87741E00F32912 /* swiftuiTabcellUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D7DCD4C2F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcellUITests" */;
+			buildPhases = (
+				9B78313348557FF0926C57F5 /* [CP] Check Pods Manifest.lock */,
+				6D7DCD382F87741E00F32912 /* Sources */,
+				6D7DCD392F87741E00F32912 /* Frameworks */,
+				6D7DCD3A2F87741E00F32912 /* Resources */,
+				B3FE8E7379C4A01193D0B991 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6D7DCD3E2F87741E00F32912 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6D7DCD3F2F87741E00F32912 /* swiftuiTabcellUITests */,
+			);
+			name = swiftuiTabcellUITests;
+			productName = swiftuiTabcellUITests;
+			productReference = 6D7DCD3C2F87741E00F32912 /* swiftuiTabcellUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6D7DCD1D2F87741B00F32912 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					6D7DCD242F87741B00F32912 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					6D7DCD312F87741E00F32912 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 6D7DCD242F87741B00F32912;
+					};
+					6D7DCD3B2F87741E00F32912 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 6D7DCD242F87741B00F32912;
+					};
+				};
+			};
+			buildConfigurationList = 6D7DCD202F87741B00F32912 /* Build configuration list for PBXProject "swiftuiTabcell" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6D7DCD1C2F87741B00F32912;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 6D7DCD262F87741B00F32912 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6D7DCD242F87741B00F32912 /* swiftuiTabcell */,
+				6D7DCD312F87741E00F32912 /* swiftuiTabcellTests */,
+				6D7DCD3B2F87741E00F32912 /* swiftuiTabcellUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6D7DCD232F87741B00F32912 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD302F87741E00F32912 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD3A2F87741E00F32912 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		49B86F61CC517EAF22BCF608 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4F7A8A9C826D7471610B7238 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-swiftuiTabcellTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9B78313348557FF0926C57F5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-swiftuiTabcell-swiftuiTabcellUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B3FE8E7379C4A01193D0B991 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BEBB2A4F917A59186D7EB665 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-swiftuiTabcell-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6D7DCD212F87741B00F32912 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD2E2F87741E00F32912 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D7DCD382F87741E00F32912 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6D7DCD342F87741E00F32912 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D7DCD242F87741B00F32912 /* swiftuiTabcell */;
+			targetProxy = 6D7DCD332F87741E00F32912 /* PBXContainerItemProxy */;
+		};
+		6D7DCD3E2F87741E00F32912 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6D7DCD242F87741B00F32912 /* swiftuiTabcell */;
+			targetProxy = 6D7DCD3D2F87741E00F32912 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6D7DCD442F87741E00F32912 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		6D7DCD452F87741E00F32912 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = W3375Q997D;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6D7DCD472F87741E00F32912 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B9AEFCFA03601274D75A8AA9 /* Pods-swiftuiTabcell.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcell;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6D7DCD482F87741E00F32912 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 085134269EBAEBF2A99156D6 /* Pods-swiftuiTabcell.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcell;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6D7DCD4A2F87741E00F32912 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3DEE68AAC1E2D82E57E06A6D /* Pods-swiftuiTabcellTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcellTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/swiftuiTabcell.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/swiftuiTabcell";
+			};
+			name = Debug;
+		};
+		6D7DCD4B2F87741E00F32912 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3DD0578710438489E24B11EA /* Pods-swiftuiTabcellTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcellTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/swiftuiTabcell.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/swiftuiTabcell";
+			};
+			name = Release;
+		};
+		6D7DCD4D2F87741E00F32912 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 431CC2D43DD0B76C01811DEE /* Pods-swiftuiTabcell-swiftuiTabcellUITests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcellUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = swiftuiTabcell;
+			};
+			name = Debug;
+		};
+		6D7DCD4E2F87741E00F32912 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 781223E9A9B58731E2B226F9 /* Pods-swiftuiTabcell-swiftuiTabcellUITests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W3375Q997D;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = qweqe.swiftuiTabcellUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = swiftuiTabcell;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6D7DCD202F87741B00F32912 /* Build configuration list for PBXProject "swiftuiTabcell" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7DCD442F87741E00F32912 /* Debug */,
+				6D7DCD452F87741E00F32912 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D7DCD462F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcell" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7DCD472F87741E00F32912 /* Debug */,
+				6D7DCD482F87741E00F32912 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D7DCD492F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcellTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7DCD4A2F87741E00F32912 /* Debug */,
+				6D7DCD4B2F87741E00F32912 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D7DCD4C2F87741E00F32912 /* Build configuration list for PBXNativeTarget "swiftuiTabcellUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7DCD4D2F87741E00F32912 /* Debug */,
+				6D7DCD4E2F87741E00F32912 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6D7DCD1D2F87741B00F32912 /* Project object */;
+}

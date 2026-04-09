@@ -1,0 +1,6 @@
+framework module Pods_swiftuiTabcell {
+  umbrella header "Pods-swiftuiTabcell-umbrella.h"
+
+  export *
+  module * { export * }
+}
