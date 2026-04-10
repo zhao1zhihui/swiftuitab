@@ -11,6 +11,7 @@ target 'swiftuiTabcell' do
   pod 'KafkaRefresh'
   pod 'SDWebImage'
   pod 'SnapKit'
+  pod "SwiftUIRefresh"
 
   target 'swiftuiTabcellTests' do
     inherit! :search_paths

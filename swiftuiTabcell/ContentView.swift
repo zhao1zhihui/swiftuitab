@@ -9,18 +9,37 @@ internal import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = FeedScreenViewModel()
+    private let pagingStyle = PagingContainerStyle.feedDefault
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 12) {
-                content
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .navigationTitle("SwiftUI Tabcell")
-            .task {
-                if viewModel.items.isEmpty {
+            PagingContainer(
+                items: viewModel.items,
+                phase: viewModel.pagePhase,
+                canLoadMore: viewModel.canLoadMore,
+                isLoadingMore: viewModel.isLoadingMore,
+                style: pagingStyle,
+                onRefresh: {
                     await viewModel.refreshContent()
+                },
+                onRetry: {
+                    await viewModel.refreshContent()
+                },
+                onLoadMoreTrigger: {
+                    viewModel.triggerLoadMoreIfNeeded()
+                },
+                onDisappear: {
+                    viewModel.cancelPagingTasks()
+                },
+                rowContent: { item in
+                    FeedRowView(row: item)
                 }
+            )
+            .navigationTitle("SwiftUI Tabcell")
+            .pagingContainerPadding(16)
+            .pagingStateViewStyle(.default)
+            .task {
+                viewModel.startInitialLoadIfNeeded()
             }
             .alert(item: $viewModel.alertMessage) { message in
                 Alert(
@@ -28,62 +47,6 @@ struct ContentView: View {
                     message: Text(message.message),
                     dismissButton: .default(Text("知道了"))
                 )
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        if viewModel.items.isEmpty {
-            if !viewModel.hasLoadedOnce || viewModel.isRefreshing {
-                ProgressView("加载中...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                switch viewModel.listState {
-                case .content:
-                    FeedStateView(title: "暂无数据", buttonTitle: "重新加载") {
-                        Task {
-                            await viewModel.refreshContent()
-                        }
-                    }
-                case .empty(let message):
-                    FeedStateView(title: message, buttonTitle: "重新加载") {
-                        Task {
-                            await viewModel.refreshContent()
-                        }
-                    }
-                case .error(let message):
-                    FeedStateView(title: message, buttonTitle: "重试") {
-                        Task {
-                            await viewModel.refreshContent()
-                        }
-                    }
-                }
-            }
-        } else {
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(viewModel.items) { item in
-                        FeedRowView(row: item, onAction: { action in
-                            viewModel.send(action)
-                        })
-                            .onAppear {
-                                Task {
-                                    await viewModel.loadMoreIfNeeded(currentItemID: item.id)
-                                }
-                            }
-                    }
-
-                    if viewModel.isLoadingMore {
-                        ProgressView()
-                            .padding(.vertical, 16)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-            }
-            .refreshable {
-                await viewModel.refreshContent()
             }
         }
     }
