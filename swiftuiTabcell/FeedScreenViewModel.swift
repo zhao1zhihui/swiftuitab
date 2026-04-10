@@ -123,7 +123,9 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
     }
 
     private func showEvent(_ message: String) {
-        alertMessage = AlertMessage(message: message)
+        #if DEBUG
+        print(message)
+        #endif
     }
 
     private func bindCallbacks(to row: FeedRow) -> FeedRow {
