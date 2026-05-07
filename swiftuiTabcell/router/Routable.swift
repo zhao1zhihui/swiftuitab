@@ -1,8 +1,6 @@
 //
 //  SmartRouter.swift
-//  智能路由系统 - 支持拦截器、钩子、路由映射
-//
-//  Created on 2026-01-18
+//  简化版路由系统 - View 自己处理参数
 //
 
 import SwiftUI
@@ -10,48 +8,239 @@ import Combine
 
 // MARK: - 路由协议
 
-/// 路由协议（类型安全）
-protocol Routable: Hashable, Identifiable {
+protocol Routable: Hashable {
     associatedtype Destination: View
-    
-    var id: String { get }
-    
-    @ViewBuilder
-    var view: Destination { get }
+    @ViewBuilder var view: Destination { get }
 }
 
-extension Routable {
-    var id: String { String(describing: Self.self) }
+// MARK: - 参数模型（遵循 Hashable）
+
+struct BasicPageParams: Hashable {
+    let step: Int
+    let canGestureBack: Bool
+    let closeType: String
+    let needLogin: Bool
+    let title: String?
+    
+    init(step: Int = 1,
+         canGestureBack: Bool = true,
+         closeType: String = "myself",
+         needLogin: Bool = false,
+         title: String? = nil) {
+        self.step = step
+        self.canGestureBack = canGestureBack
+        self.closeType = closeType
+        self.needLogin = needLogin
+        self.title = title
+    }
+    
+    init(from dict: [String: String]) {
+        self.step = Int(dict["step"] ?? "1") ?? 1
+        self.canGestureBack = (dict["canGestureBack"] ?? "1") != "0"
+        self.closeType = dict["closeType"] ?? "myself"
+        self.needLogin = (dict["needLogin"] ?? "0") == "1"
+        self.title = dict["title"]
+    }
+}
+
+struct ProfileParams: Hashable {
+    let userId: String
+    let userName: String?
+    
+    init(userId: String, userName: String? = nil) {
+        self.userId = userId
+        self.userName = userName
+    }
+    
+    init(from dict: [String: String]) {
+        self.userId = dict["userId"] ?? dict["id"] ?? ""
+        self.userName = dict["name"]
+    }
+}
+
+struct ProductDetailParams: Hashable {
+    let productId: String
+    let productName: String?
+    let price: Double?
+    
+    init(productId: String, productName: String? = nil, price: Double? = nil) {
+        self.productId = productId
+        self.productName = productName
+        self.price = price
+    }
+    
+    init(from dict: [String: String]) {
+        self.productId = dict["productId"] ?? dict["id"] ?? ""
+        self.productName = dict["name"]
+        self.price = Double(dict["price"] ?? "")
+    }
+}
+
+struct OrderDetailParams: Hashable {
+    let orderId: String
+    let status: String?
+    
+    init(orderId: String, status: String? = nil) {
+        self.orderId = orderId
+        self.status = status
+    }
+    
+    init(from dict: [String: String]) {
+        self.orderId = dict["orderId"] ?? dict["id"] ?? ""
+        self.status = dict["status"]
+    }
+}
+
+// MARK: - URL 解析器
+
+struct URLParser {
+    
+    static func parse(_ url: URL) -> (path: String, params: [String: String]) {
+        var params: [String: String] = [:]
+        
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            components.queryItems?.forEach { item in
+                params[item.name] = item.value
+            }
+        }
+        
+        if url.scheme == "ftlending", let host = url.host {
+            return (path: "/\(host)\(url.path)", params: params)
+        }
+        
+        return (path: url.path, params: params)
+    }
+    
+    static func matchPattern(_ pattern: String, path: String) -> [String: String]? {
+        let patternComponents = pattern.split(separator: "/")
+        let pathComponents = path.split(separator: "/")
+        
+        guard patternComponents.count == pathComponents.count else { return nil }
+        
+        var params: [String: String] = [:]
+        for (patternComp, pathComp) in zip(patternComponents, pathComponents) {
+            if patternComp.hasPrefix(":") {
+                let paramName = String(patternComp.dropFirst())
+                params[paramName] = String(pathComp)
+            } else if patternComp != pathComp {
+                return nil
+            }
+        }
+        return params
+    }
+}
+
+// MARK: - AppRoute 枚举（显式声明 Hashable）
+
+enum AppRoute: Hashable, Routable {
+    case home
+    case settings
+    case orders
+    case login
+    case detail(id: String, title: String)
+    case basic(params: BasicPageParams)
+    case productDetail(params: ProductDetailParams)
+    case orderDetail(params: OrderDetailParams)
+    case profile(params: ProfileParams)
+    
+    // MARK: - View 映射
+    @ViewBuilder
+    var view: some View {
+        switch self {
+        case .home:
+            HomeView()
+        case .settings:
+            SettingsView()
+        case .orders:
+            OrdersView()
+        case .login:
+            LoginView()
+        case .detail(let id, let title):
+            DetailView(id: id, title: title)
+        case .basic(let params):
+            BasicView(params: params)
+        case .productDetail(let params):
+            ProductDetailView(params: params)
+        case .orderDetail(let params):
+            OrderDetailView(params: params)
+        case .profile(let params):
+            ProfileView(params: params)
+        }
+    }
+    
+    // MARK: - 是否需要登录
+    var requiresAuth: Bool {
+        switch self {
+        case .orders, .profile:
+            return true
+        case .basic(let params):
+            return params.needLogin
+        default:
+            return false
+        }
+    }
+    
+    // MARK: - URL 解析
+    static func fromURL(_ url: URL) -> AppRoute? {
+        let (path, params) = URLParser.parse(url)
+        
+        // 固定路径匹配
+        switch path {
+        case "/", "/home":
+            return .home
+        case "/settings":
+            return .settings
+        case "/orders":
+            return .orders
+        case "/login":
+            return .login
+        case "/profile":
+            return .profile(params: ProfileParams(from: params))
+        case "/product":
+            return .productDetail(params: ProductDetailParams(from: params))
+        case "/order":
+            return .orderDetail(params: OrderDetailParams(from: params))
+        case "/addition/basic":
+            return .basic(params: BasicPageParams(from: params))
+        default:
+            break
+        }
+        
+        // 动态路径匹配
+        if let userId = URLParser.matchPattern("/user/:userId", path: path)?["userId"] {
+            var newParams = params
+            newParams["userId"] = userId
+            return .profile(params: ProfileParams(from: newParams))
+        }
+        
+        if let productId = URLParser.matchPattern("/product/:productId", path: path)?["productId"] {
+            var newParams = params
+            newParams["productId"] = productId
+            return .productDetail(params: ProductDetailParams(from: newParams))
+        }
+        
+        if let orderId = URLParser.matchPattern("/order/:orderId", path: path)?["orderId"] {
+            var newParams = params
+            newParams["orderId"] = orderId
+            return .orderDetail(params: OrderDetailParams(from: newParams))
+        }
+        
+        return nil
+    }
 }
 
 // MARK: - 拦截结果
 
-/// 拦截结果
 enum InterceptResult {
-    case allow                    // 允许跳转
-    case redirect(to: any Routable)  // 重定向到其他路由
-    case cancel                   // 取消跳转
+    case allow
+    case redirect(to: any Routable)
+    case cancel
 }
 
 // MARK: - 路由拦截器协议
 
-/// 路由拦截器 - 可以阻止或重定向跳转
 protocol RouteInterceptor {
-    /// 拦截方法，返回结果决定是否继续跳转
     func intercept(route: any Routable) async -> InterceptResult
-}
-
-// MARK: - 路由钩子协议
-
-/// 路由钩子 - 只能观察，不能改变跳转流程
-/// 注意：钩子方法运行在 MainActor 上，可以安全修改 UI 状态
-@MainActor
-protocol RouteHook {
-    /// 跳转前调用（在主线程）
-    func willNavigate(to route: any Routable)
-    
-    /// 跳转后调用（在主线程）
-    func didNavigate(to route: any Routable)
 }
 
 // MARK: - 路由管理器
@@ -59,132 +248,27 @@ protocol RouteHook {
 @MainActor
 class Router<Route: Routable>: ObservableObject {
     
-    // MARK: - Published Properties
-    
-    /// 导航路径
     @Published var path = NavigationPath()
-    
-    /// 当前展示的模态页面
     @Published var presentedRoute: Route?
-    
-    /// 是否正在展示模态
     @Published var isPresenting = false
     
-    // MARK: - Private Properties
-    
-    /// 拦截器列表（按添加顺序执行）
     private var interceptors: [RouteInterceptor] = []
-    
-    /// 钩子列表（按添加顺序执行）
-    private var hooks: [RouteHook] = []
-    
-    /// 是否正在导航中
     private var isNavigating = false
-    
-    /// 被拦截的路由（用于登录后继续跳转）
     private var pendingRoute: Route?
     
-    // MARK: - Initialization
+    nonisolated init() {}
     
-    public nonisolated init() {}
-    
-    // MARK: - 注册方法
-    
-    /// 添加拦截器（按添加顺序执行）
-    public func addInterceptor(_ interceptor: RouteInterceptor) {
+    // MARK: - 注册拦截器
+    func addInterceptor(_ interceptor: RouteInterceptor) {
         interceptors.append(interceptor)
     }
     
-    /// 移除所有拦截器
-    public func removeAllInterceptors() {
-        interceptors.removeAll()
-    }
-    
-    /// 添加钩子（按添加顺序执行）
-    public func addHook(_ hook: RouteHook) {
-        hooks.append(hook)
-    }
-    
-    /// 移除所有钩子
-    public func removeAllHooks() {
-        hooks.removeAll()
-    }
-    
     // MARK: - 导航方法
-    
-    /// Push 新页面（异步，支持拦截器中的异步操作）
-    public func push(to route: Route) async {
-        await navigate(to: route)
+    func push(_ route: Route) {
+        Task { await push(to: route) }
     }
     
-    /// Push 新页面（同步，简单场景使用）
-    public func push(_ route: Route) {
-        Task {
-            await push(to: route)
-        }
-    }
-    
-    /// 返回上一页
-    public func pop() {
-        guard !path.isEmpty else { return }
-        path.removeLast()
-    }
-    
-    /// 返回到根页面
-    public func popToRoot() {
-        path.removeLast(path.count)
-    }
-    
-    /// 替换根视图（清空导航栈后 Push）
-    public func replaceRoot(with route: Route) async {
-        popToRoot()
-        await push(to: route)
-    }
-    
-    /// 模态展示页面
-    public func present(_ route: Route) async {
-        let result = await executeInterceptors(for: route)
-        
-        switch result {
-        case .allow:
-            presentedRoute = route
-            isPresenting = true
-            executeDidNavigateHooks(for: route)
-            
-        case .redirect(let newRoute):
-            if let newRoute = newRoute as? Route {
-                await present(newRoute)
-            }
-            
-        case .cancel:
-            break
-        }
-    }
-    
-    /// 关闭模态
-    public func dismiss() {
-        presentedRoute = nil
-        isPresenting = false
-    }
-    
-    /// 登录成功后继续跳转被拦截的路由
-    public func continuePendingRoute() {
-        guard let pendingRoute = pendingRoute else { return }
-        self.pendingRoute = nil
-        
-        Task {
-            await navigate(to: pendingRoute)
-        }
-    }
-    
-    /// 清除待跳转的路由（用户取消登录时调用）
-    public func clearPendingRoute() {
-        pendingRoute = nil
-    }
-    
-    // MARK: - Private Methods
-    
-    private func navigate(to route: Route) async {
+    func push(to route: Route) async {
         guard !isNavigating else { return }
         isNavigating = true
         
@@ -192,26 +276,19 @@ class Router<Route: Routable>: ObservableObject {
         
         switch result {
         case .allow:
-            executeWillNavigateHooks(for: route)
-            
             await MainActor.run {
                 path.append(route)
             }
-            
-            executeDidNavigateHooks(for: route)
             isNavigating = false
             
         case .redirect(let newRoute):
             isNavigating = false
-            
             if let newRoute = newRoute as? Route {
-                // 检查是否是登录页
                 if isLoginRoute(newRoute) {
-                    // 保存被拦截的路由，登录成功后继续跳转
                     pendingRoute = route
-                    await navigate(to: newRoute)
+                    await push(to: newRoute)
                 } else {
-                    await navigate(to: newRoute)
+                    await push(to: newRoute)
                 }
             }
             
@@ -220,6 +297,69 @@ class Router<Route: Routable>: ObservableObject {
         }
     }
     
+    func pop() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
+    }
+    
+    func popWithoutAnimation() {
+        guard !path.isEmpty else { return }
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            path.removeLast()
+        }
+    }
+    
+    func popToRoot() {
+        path.removeLast(path.count)
+    }
+    
+    func replaceRoot(with route: Route) async {
+        popToRoot()
+        await push(to: route)
+    }
+    
+    func present(_ route: Route) async {
+        presentedRoute = route
+        isPresenting = true
+    }
+    
+    func dismiss() {
+        presentedRoute = nil
+        isPresenting = false
+    }
+    
+    func continuePendingRoute() {
+        guard let pendingRoute = pendingRoute else { return }
+        self.pendingRoute = nil
+        Task {
+            await push(to: pendingRoute)
+        }
+    }
+    
+    func clearPendingRoute() {
+        pendingRoute = nil
+    }
+    
+    func handleURL(_ url: URL) async -> Bool where Route == AppRoute {
+        guard let route = AppRoute.fromURL(url) else {
+            print("❌ 无法解析 URL: \(url)")
+            return false
+        }
+        await push(to: route)
+        return true
+    }
+    
+    func handleURL(_ urlString: String) async -> Bool where Route == AppRoute {
+        guard let url = URL(string: urlString) else {
+            print("❌ 无效的 URL: \(urlString)")
+            return false
+        }
+        return await handleURL(url)
+    }
+    
+    // MARK: - Private
     private func executeInterceptors(for route: Route) async -> InterceptResult {
         for interceptor in interceptors {
             let result = await interceptor.intercept(route: route)
@@ -231,21 +371,7 @@ class Router<Route: Routable>: ObservableObject {
         return .allow
     }
     
-    private func executeWillNavigateHooks(for route: Route) {
-        for hook in hooks {
-            hook.willNavigate(to: route)
-        }
-    }
-    
-    private func executeDidNavigateHooks(for route: Route) {
-        for hook in hooks {
-            hook.didNavigate(to: route)
-        }
-    }
-    
     private func isLoginRoute(_ route: Route) -> Bool {
-        // 这个方法需要在具体实现中判断，这里使用字符串描述作为示例
-        // 实际使用时可以添加一个协议方法或者直接判断
         let routeString = String(describing: route)
         return routeString.contains("login") || routeString.contains("Login")
     }
@@ -253,17 +379,16 @@ class Router<Route: Routable>: ObservableObject {
 
 // MARK: - 路由视图容器
 
-/// 路由视图容器 - 在 App 入口使用
 struct RouterView<Route: Routable>: View {
     @StateObject private var router: Router<Route>
     @ViewBuilder private let rootView: () -> Route.Destination
     
-    public init(router: Router<Route> = Router<Route>(), rootView: @autoclosure @escaping () -> Route.Destination) {
+    init(router: Router<Route> = Router<Route>(), rootView: @autoclosure @escaping () -> Route.Destination) {
         self._router = StateObject(wrappedValue: router)
         self.rootView = rootView
     }
     
-    public var body: some View {
+    var body: some View {
         NavigationStack(path: $router.path) {
             rootView()
                 .navigationDestination(for: Route.self) { route in
@@ -279,77 +404,8 @@ struct RouterView<Route: Routable>: View {
     }
 }
 
-extension Router {
-    func popWithCompletion(completion: @escaping () -> Void) {
-        guard !path.isEmpty else {
-            completion()
-            return
-        }
-        
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
+// MARK: - 拦截器
 
-        // 使用该事务执行操作
-        withTransaction(transaction) {
-            path.removeLast()
-            
-        }
-        completion()
-
-    }
-}
-
-// MARK: - View 扩展
-
-extension View {
-    /// 获取路由环境对象
-    func router<Route: Routable>() -> some View {
-        self.environmentObject(Router<Route>())
-    }
-}
-
-// MARK: - ============================================
-// MARK: - 使用示例
-// MARK: - ============================================
-
-// 1. 定义路由枚举
-enum AppRoute: Routable {
-    case home
-    case profile(userId: String)
-    case settings
-    case orders
-    case login
-    
-    @ViewBuilder
-    var view: some View {
-        switch self {
-        case .home:
-            HomeView()
-        case .profile(let userId):
-            ProfileView(userId: userId)
-        case .settings:
-            SettingsView()
-        case .orders:
-            OrdersView()
-        case .login:
-            LoginView()
-        }
-    }
-    
-    // 辅助属性：是否需要登录
-    var requiresAuth: Bool {
-        switch self {
-        case .orders, .profile:
-            return true
-        default:
-            return false
-        }
-    }
-}
-
-// MARK: - 拦截器示例
-
-/// 登录拦截器 - 检查是否需要登录
 struct AuthInterceptor: RouteInterceptor {
     private var isLoggedIn: Bool {
         UserDefaults.standard.bool(forKey: "isLoggedIn")
@@ -369,43 +425,10 @@ struct AuthInterceptor: RouteInterceptor {
     }
 }
 
-/// 日志拦截器 - 打印路由请求
 struct LoggingInterceptor: RouteInterceptor {
     func intercept(route: any Routable) async -> InterceptResult {
         print("📱 路由请求: \(route)")
         return .allow
-    }
-}
-
-// MARK: - 钩子示例
-
-/// 埋点钩子
-struct AnalyticsHook: RouteHook {
-    func willNavigate(to route: any Routable) {
-        print("📊 埋点: 开始跳转 \(route)")
-    }
-    
-    func didNavigate(to route: any Routable) {
-        print("📊 埋点: 完成跳转 \(route)")
-    }
-}
-
-/// 性能监控钩子 - 使用 class 解决可变状态问题
-@MainActor
-final class PerformanceHook: RouteHook {
-    private var startTime: Date?
-    
-    nonisolated init() {}
-    
-    func willNavigate(to route: any Routable) {
-        startTime = Date()
-        print("⏱️ 开始计时: \(route)")
-    }
-    
-    func didNavigate(to route: any Routable) {
-        guard let startTime = startTime else { return }
-        let duration = Date().timeIntervalSince(startTime)
-        print("⏱️ 跳转耗时: \(String(format: "%.3f", duration))秒 - \(route)")
     }
 }
 
@@ -416,60 +439,198 @@ struct HomeView: View {
     
     var body: some View {
         List {
-            Section("公开页面") {
-                Button("去个人资料（需要登录）") {
-                    router.push(.profile(userId: "123"))
+            Section("基础导航") {
+                Button("基础页面") {
+                    let params = BasicPageParams(
+                        step: 1,
+                        canGestureBack: false,
+                        closeType: "myself",
+                        needLogin: true,
+                        title: "基础信息"
+                    )
+                    router.push(.basic(params: params))
                 }
-                Button("去设置") {
-                    router.push(.settings)
+                
+                Button("商品详情") {
+                    let params = ProductDetailParams(
+                        productId: "12345",
+                        productName: "iPhone 15",
+                        price: 5999
+                    )
+                    router.push(.productDetail(params: params))
+                }
+                
+                Button("订单详情") {
+                    let params = OrderDetailParams(
+                        orderId: "ORDER001",
+                        status: "待付款"
+                    )
+                    router.push(.orderDetail(params: params))
+                }
+                
+                Button("个人资料") {
+                    let params = ProfileParams(
+                        userId: "123",
+                        userName: "张三"
+                    )
+                    router.push(.profile(params: params))
                 }
             }
             
-            Section("需要登录的页面") {
-                Button("我的订单") {
-                    router.push(.orders)
+            Section("URL 跳转测试") {
+                Button("ftlending://addition/basic?step=1&canGestureBack=0&needLogin=1") {
+                    Task {
+                        await router.handleURL("ftlending://addition/basic?step=1&canGestureBack=0&needLogin=1")
+                    }
+                }
+                
+                Button("ftlending://product/detail?id=12345&name=iPhone&price=5999") {
+                    Task {
+                        await router.handleURL("ftlending://product/detail?id=12345&name=iPhone&price=5999")
+                    }
+                }
+                
+                Button("ftlending://user/123") {
+                    Task {
+                        await router.handleURL("ftlending://user/123")
+                    }
                 }
             }
             
             Section("登录状态") {
-                Button("清除登录状态") {
+                Button("模拟登录") {
+                    UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                    print("✅ 已登录")
+                }
+                
+                Button("模拟登出") {
                     UserDefaults.standard.set(false, forKey: "isLoggedIn")
-                    print("已清除登录状态")
+                    print("❌ 已登出")
                 }
             }
         }
         .navigationTitle("首页")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("登录") {
-                    router.push(.login)
+                Button("设置") {
+                    router.push(.settings)
                 }
             }
         }
     }
 }
 
+struct BasicView: View {
+    let params: BasicPageParams
+    @EnvironmentObject var router: Router<AppRoute>
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text(params.title ?? "基础页面")
+                .font(.largeTitle)
+            
+            VStack(alignment: .leading, spacing: 10) {
+                Text("step: \(params.step)")
+                Text("canGestureBack: \(params.canGestureBack ? "支持" : "不支持")")
+                Text("closeType: \(params.closeType)")
+                Text("needLogin: \(params.needLogin ? "需要" : "不需要")")
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(10)
+            
+            Button("下一步") {
+                let nextParams = BasicPageParams(
+                    step: params.step + 1,
+                    canGestureBack: params.canGestureBack,
+                    closeType: params.closeType,
+                    needLogin: params.needLogin,
+                    title: params.title
+                )
+                router.push(.basic(params: nextParams))
+            }
+            .buttonStyle(.borderedProminent)
+            
+            Button("关闭") {
+                if params.closeType == "myself" {
+                    dismiss()
+                } else if params.closeType == "root" {
+                    router.popToRoot()
+                } else {
+                    router.pop()
+                }
+            }
+        }
+        .padding()
+        .navigationTitle("Step \(params.step)")
+        .interactiveDismissDisabled(!params.canGestureBack)
+    }
+}
+
+struct ProductDetailView: View {
+    let params: ProductDetailParams
+    @EnvironmentObject var router: Router<AppRoute>
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("商品详情")
+                .font(.largeTitle)
+            Text("商品ID: \(params.productId)")
+            if let name = params.productName {
+                Text("商品名: \(name)")
+            }
+            if let price = params.price {
+                Text("价格: ¥\(price)")
+            }
+            
+            Button("返回") {
+                router.pop()
+            }
+        }
+        .navigationTitle(params.productName ?? "商品详情")
+    }
+}
+
+struct OrderDetailView: View {
+    let params: OrderDetailParams
+    @EnvironmentObject var router: Router<AppRoute>
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("订单详情")
+                .font(.largeTitle)
+            Text("订单ID: \(params.orderId)")
+            if let status = params.status {
+                Text("状态: \(status)")
+            }
+            
+            Button("返回") {
+                router.pop()
+            }
+        }
+        .navigationTitle("订单详情")
+    }
+}
+
 struct ProfileView: View {
-    let userId: String
+    let params: ProfileParams
     @EnvironmentObject var router: Router<AppRoute>
     
     var body: some View {
         VStack(spacing: 20) {
             Text("个人资料")
                 .font(.largeTitle)
-            Text("用户ID: \(userId)")
+            Text("用户ID: \(params.userId)")
+            if let name = params.userName {
+                Text("姓名: \(name)")
+            }
             
             Button("返回") {
                 router.pop()
             }
-            
-            Button("回首页") {
-                Task {
-                    await router.replaceRoot(with: .home)
-                }
-            }
         }
-        .navigationTitle("资料")
+        .navigationTitle(params.userName ?? "个人资料")
     }
 }
 
@@ -480,7 +641,6 @@ struct SettingsView: View {
         VStack(spacing: 20) {
             Text("设置页面")
                 .font(.largeTitle)
-            
             Button("返回") {
                 router.pop()
             }
@@ -496,7 +656,6 @@ struct OrdersView: View {
         VStack(spacing: 20) {
             Text("我的订单")
                 .font(.largeTitle)
-            
             Button("返回") {
                 router.pop()
             }
@@ -507,7 +666,6 @@ struct OrdersView: View {
 
 struct LoginView: View {
     @EnvironmentObject var router: Router<AppRoute>
-    @Environment(\.dismiss) var dismiss
     @State private var username = ""
     @State private var password = ""
     
@@ -534,15 +692,32 @@ struct LoginView: View {
     }
     
     private func login() {
-        // 模拟登录成功
         UserDefaults.standard.set(true, forKey: "isLoggedIn")
         print("✅ 登录成功")
         
-        // 关闭登录页面
-        router.popWithCompletion {
-            // ✅ 登录成功后继续跳转被拦截的路由
+        router.popWithoutAnimation()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             router.continuePendingRoute()
         }
+    }
+}
+
+struct DetailView: View {
+    let id: String
+    let title: String
+    @EnvironmentObject var router: Router<AppRoute>
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("详情页面")
+                .font(.largeTitle)
+            Text("ID: \(id)")
+            Button("返回") {
+                router.pop()
+            }
+        }
+        .navigationTitle(title)
     }
 }
 
@@ -550,25 +725,21 @@ struct LoginView: View {
 
 @main
 struct MyApp: App {
-    // 创建路由实例
     let router = Router<AppRoute>()
     
     init() {
-        // 注册拦截器（按添加顺序执行）
-        router.addInterceptor(LoggingInterceptor())  // 先记录日志
-        router.addInterceptor(AuthInterceptor())     // 再检查登录
-        
-        // 注册钩子（按添加顺序执行）
-        router.addHook(AnalyticsHook())   // 埋点统计
-        
-        // 使用 class 而不是 struct，可以修改自身属性
-        let performanceHook = PerformanceHook()
-        router.addHook(performanceHook)
+        router.addInterceptor(LoggingInterceptor())
+        router.addInterceptor(AuthInterceptor())
     }
     
     var body: some Scene {
         WindowGroup {
             RouterView(router: router, rootView: AppRoute.home.view)
+                .onOpenURL { url in
+                    Task {
+                        await router.handleURL(url)
+                    }
+                }
         }
     }
 }
