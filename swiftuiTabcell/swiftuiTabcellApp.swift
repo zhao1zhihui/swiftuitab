@@ -7,7 +7,7 @@
 
  import SwiftUI
 
-@main
+//@main
 struct swiftuiTabcellApp: App {
     var body: some Scene {
         WindowGroup {

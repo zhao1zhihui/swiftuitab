@@ -5,8 +5,8 @@
 //  Created on 2026-01-18
 //
 
- import SwiftUI
- import Combine
+import SwiftUI
+import Combine
 
 // MARK: - 路由协议
 
@@ -80,6 +80,9 @@ class Router<Route: Routable>: ObservableObject {
     
     /// 是否正在导航中
     private var isNavigating = false
+    
+    /// 被拦截的路由（用于登录后继续跳转）
+    private var pendingRoute: Route?
     
     // MARK: - Initialization
     
@@ -164,34 +167,56 @@ class Router<Route: Routable>: ObservableObject {
         isPresenting = false
     }
     
+    /// 登录成功后继续跳转被拦截的路由
+    public func continuePendingRoute() {
+        guard let pendingRoute = pendingRoute else { return }
+        self.pendingRoute = nil
+        
+        Task {
+            await navigate(to: pendingRoute)
+        }
+    }
+    
+    /// 清除待跳转的路由（用户取消登录时调用）
+    public func clearPendingRoute() {
+        pendingRoute = nil
+    }
+    
     // MARK: - Private Methods
     
     private func navigate(to route: Route) async {
         guard !isNavigating else { return }
         isNavigating = true
-        defer { isNavigating = false }
         
-        // 执行拦截器
         let result = await executeInterceptors(for: route)
         
         switch result {
         case .allow:
-            // 执行跳转前钩子
             executeWillNavigateHooks(for: route)
             
-            // 执行跳转
-            path.append(route)
+            await MainActor.run {
+                path.append(route)
+            }
             
-            // 执行跳转后钩子
             executeDidNavigateHooks(for: route)
+            isNavigating = false
             
         case .redirect(let newRoute):
+            isNavigating = false
+            
             if let newRoute = newRoute as? Route {
-                await navigate(to: newRoute)
+                // 检查是否是登录页
+                if isLoginRoute(newRoute) {
+                    // 保存被拦截的路由，登录成功后继续跳转
+                    pendingRoute = route
+                    await navigate(to: newRoute)
+                } else {
+                    await navigate(to: newRoute)
+                }
             }
             
         case .cancel:
-            break
+            isNavigating = false
         }
     }
     
@@ -216,6 +241,13 @@ class Router<Route: Routable>: ObservableObject {
         for hook in hooks {
             hook.didNavigate(to: route)
         }
+    }
+    
+    private func isLoginRoute(_ route: Route) -> Bool {
+        // 这个方法需要在具体实现中判断，这里使用字符串描述作为示例
+        // 实际使用时可以添加一个协议方法或者直接判断
+        let routeString = String(describing: route)
+        return routeString.contains("login") || routeString.contains("Login")
     }
 }
 
@@ -244,6 +276,26 @@ struct RouterView<Route: Routable>: View {
             }
         }
         .environmentObject(router)
+    }
+}
+
+extension Router {
+    func popWithCompletion(completion: @escaping () -> Void) {
+        guard !path.isEmpty else {
+            completion()
+            return
+        }
+        
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        // 使用该事务执行操作
+        withTransaction(transaction) {
+            path.removeLast()
+            
+        }
+        completion()
+
     }
 }
 
@@ -304,11 +356,11 @@ struct AuthInterceptor: RouteInterceptor {
     }
     
     func intercept(route: any Routable) async -> InterceptResult {
-        guard let route = route as? AppRoute else {
+        guard let appRoute = route as? AppRoute else {
             return .allow
         }
         
-        if route.requiresAuth && !isLoggedIn {
+        if appRoute.requiresAuth && !isLoggedIn {
             print("🔐 需要登录，重定向到登录页")
             return .redirect(to: AppRoute.login)
         }
@@ -376,6 +428,13 @@ struct HomeView: View {
             Section("需要登录的页面") {
                 Button("我的订单") {
                     router.push(.orders)
+                }
+            }
+            
+            Section("登录状态") {
+                Button("清除登录状态") {
+                    UserDefaults.standard.set(false, forKey: "isLoggedIn")
+                    print("已清除登录状态")
                 }
             }
         }
@@ -448,6 +507,7 @@ struct OrdersView: View {
 
 struct LoginView: View {
     @EnvironmentObject var router: Router<AppRoute>
+    @Environment(\.dismiss) var dismiss
     @State private var username = ""
     @State private var password = ""
     
@@ -478,14 +538,17 @@ struct LoginView: View {
         UserDefaults.standard.set(true, forKey: "isLoggedIn")
         print("✅ 登录成功")
         
-        // 返回上一页
-        router.pop()
+        // 关闭登录页面
+        router.popWithCompletion {
+            // ✅ 登录成功后继续跳转被拦截的路由
+            router.continuePendingRoute()
+        }
     }
 }
 
 // MARK: - App 入口
 
-//@main
+@main
 struct MyApp: App {
     // 创建路由实例
     let router = Router<AppRoute>()
@@ -498,7 +561,7 @@ struct MyApp: App {
         // 注册钩子（按添加顺序执行）
         router.addHook(AnalyticsHook())   // 埋点统计
         
-        // ✅ 使用 class 而不是 struct，可以修改自身属性
+        // 使用 class 而不是 struct，可以修改自身属性
         let performanceHook = PerformanceHook()
         router.addHook(performanceHook)
     }
