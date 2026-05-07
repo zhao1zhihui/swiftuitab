@@ -1,5 +1,5 @@
-internal import SwiftUI
-internal import Combine
+ import SwiftUI
+ import Combine
 
 @MainActor
 final class FeedScreenViewModel: ObservableObject, PagingViewModel {

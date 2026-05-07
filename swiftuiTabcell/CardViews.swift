@@ -1,4 +1,4 @@
-internal import SwiftUI
+ import SwiftUI
 
 private struct CardContainer<Content: View>: View {
     let content: Content

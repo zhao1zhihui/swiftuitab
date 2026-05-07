@@ -5,7 +5,7 @@
 //  Created by wb-zhaozhihui on 2026/4/9.
 //
 
-internal import SwiftUI
+ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = FeedScreenViewModel()

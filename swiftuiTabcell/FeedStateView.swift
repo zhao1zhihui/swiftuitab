@@ -1,4 +1,4 @@
-internal import SwiftUI
+ import SwiftUI
 
 struct FeedStateViewStyle {
     let iconName: String

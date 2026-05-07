@@ -47,22 +47,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6D7DCD272F87741B00F32912 /* swiftuiTabcell */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = swiftuiTabcell;
 			sourceTree = "<group>";
 		};
 		6D7DCD352F87741E00F32912 /* swiftuiTabcellTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = swiftuiTabcellTests;
 			sourceTree = "<group>";
 		};
 		6D7DCD3F2F87741E00F32912 /* swiftuiTabcellUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = swiftuiTabcellUITests;
 			sourceTree = "<group>";
 		};
@@ -288,9 +282,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell/Pods-swiftuiTabcell-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -349,9 +347,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-swiftuiTabcell-swiftuiTabcellUITests/Pods-swiftuiTabcell-swiftuiTabcellUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
