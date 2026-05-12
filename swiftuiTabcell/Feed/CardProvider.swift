@@ -1,9 +1,11 @@
 import Foundation
 
+@MainActor
 protocol CardProvider {
     func loadItems(page: Int, pageSize: Int) async -> APIResult<PageResult<FeedRow>>
 }
 
+@MainActor
 final class EnumCardProvider: CardProvider {
     private let repository = FeedRepository()
 

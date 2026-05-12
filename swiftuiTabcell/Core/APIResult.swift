@@ -1,8 +1,8 @@
 import Foundation
 
-enum APIError: Error {
-    case network(Error)
-    case decoding(Error)
+enum APIError: Error, Sendable {
+    case network(String)
+    case decoding(String)
     case emptyData
     case server(code: Int, message: String)
     case cancelled
@@ -10,10 +10,10 @@ enum APIError: Error {
 
     var message: String {
         switch self {
-        case .network(let error):
-            return error.localizedDescription
-        case .decoding(let error):
-            return "数据解析失败: \(error.localizedDescription)"
+        case .network(let message):
+            return message
+        case .decoding(let message):
+            return "数据解析失败: \(message)"
         case .emptyData:
             return "暂无数据"
         case .server(_, let message):
@@ -40,6 +40,8 @@ enum APIResult<Value> {
     }
 }
 
+extension APIResult: Sendable where Value: Sendable {}
+
 struct PageResult<Item> {
     let items: [Item]
     let page: Int
@@ -50,3 +52,5 @@ struct PageResult<Item> {
         PageResult<T>(items: items.map(transform), page: page, pageSize: pageSize, hasMore: hasMore)
     }
 }
+
+extension PageResult: Sendable where Item: Sendable {}

@@ -15,11 +15,10 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
     @Published var alertMessage: AlertMessage?
     @Published var isRefreshing = false
     @Published var isLoadingMore = false
+    @Published private(set) var loadMoreResetToken = 0
 
     var paging = PagingState(page: 0, pageSize: 10, hasMore: true)
     private let provider: CardProvider = EnumCardProvider()
-    private var initialLoadTask: Task<Void, Never>?
-    private var loadMoreTask: Task<Void, Never>?
     private let minimumLoadMoreIndicatorDuration: TimeInterval = 0.2
 
     var canLoadMore: Bool {
@@ -45,6 +44,7 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
 
         let result = await refresh()
         guard !Task.isCancelled else { return }
+        loadMoreResetToken &+= 1
         applyRefresh(result)
     }
 
@@ -66,28 +66,14 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
         applyLoadMore(result)
     }
 
-    func startInitialLoadIfNeeded() {
-        guard items.isEmpty, initialLoadTask == nil else { return }
-        initialLoadTask = Task { @MainActor [weak self] in
-            defer { self?.initialLoadTask = nil }
-            await self?.refreshContent()
-        }
+    func refreshContentIfNeeded() async {
+        guard items.isEmpty else { return }
+        await refreshContent()
     }
 
-    func triggerLoadMoreIfNeeded() {
+    func loadMoreIfNeeded() async {
         guard canLoadMore else { return }
-        guard loadMoreTask == nil else { return }
-        loadMoreTask = Task { @MainActor [weak self] in
-            defer { self?.loadMoreTask = nil }
-            await self?.loadMoreContent()
-        }
-    }
-
-    func cancelPagingTasks() {
-        initialLoadTask?.cancel()
-        loadMoreTask?.cancel()
-        initialLoadTask = nil
-        loadMoreTask = nil
+        await loadMoreContent()
     }
 
     private func applyRefresh(_ result: APIResult<[FeedRow]>) {

@@ -6,6 +6,7 @@ struct PagingState {
     var hasMore: Bool = true
 }
 
+@MainActor
 protocol PagingViewModel: AnyObject {
     associatedtype Item
     var items: [Item] { get set }
@@ -13,18 +14,22 @@ protocol PagingViewModel: AnyObject {
     func fetch(page: Int, pageSize: Int) async -> APIResult<PageResult<Item>>
 }
 
+@MainActor
 extension PagingViewModel {
     @discardableResult
     func refresh() async -> APIResult<[Item]> {
-        paging.page = 0
-        let result = await fetch(page: paging.page, pageSize: paging.pageSize)
+        let currentPaging = paging
+        let result = await fetch(page: 0, pageSize: paging.pageSize)
         guard !Task.isCancelled else { return .failure(.cancelled) }
         switch result {
         case .success(let pageResult):
             items = pageResult.items
+            paging.page = pageResult.page
+            paging.pageSize = pageResult.pageSize
             paging.hasMore = pageResult.hasMore
             return .success(items)
         case .failure(let error):
+            paging = currentPaging
             return .failure(error)
         }
     }
