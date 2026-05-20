@@ -1,6 +1,6 @@
 import Foundation
 
-extension FeedItem {
+nonisolated extension FeedItem {
     static func decode(from decoder: Decoder) throws -> FeedItem {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(ItemType.self, forKey: .type)
@@ -33,7 +33,9 @@ extension FeedItem {
             try container.encode(value, forKey: .data)
         }
     }
+}
 
+extension FeedItem {
     func makeRow() -> FeedRow {
         switch self {
         case .text(let model):

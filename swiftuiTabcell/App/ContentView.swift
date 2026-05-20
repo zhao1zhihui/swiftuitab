@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var viewModel = FeedScreenViewModel()
+    @StateObject private var viewModel: FeedScreenViewModel
     private let pagingStyle = PagingContainerStyle.feedDefault
     @EnvironmentObject private var router: AppRouter
+
+    init(viewModel: FeedScreenViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     var body: some View {
         PagingContainer(
@@ -50,7 +54,7 @@ struct ContentView: View {
         }
         .alert(item: $viewModel.alertMessage) { message in
             Alert(
-                title: Text("提示"),
+                title: Text(message.title),
                 message: Text(message.message),
                 dismissButton: .default(Text("知道了"))
             )

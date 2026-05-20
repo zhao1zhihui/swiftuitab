@@ -1,6 +1,6 @@
 import Foundation
 
-enum APIError: Error, Sendable {
+nonisolated enum APIError: Error, Sendable {
     case network(String)
     case decoding(String)
     case emptyData
@@ -26,7 +26,7 @@ enum APIError: Error, Sendable {
     }
 }
 
-enum APIResult<Value> {
+nonisolated enum APIResult<Value> {
     case success(Value)
     case failure(APIError)
 
@@ -42,7 +42,7 @@ enum APIResult<Value> {
 
 extension APIResult: Sendable where Value: Sendable {}
 
-struct PageResult<Item> {
+nonisolated struct PageResult<Item> {
     let items: [Item]
     let page: Int
     let pageSize: Int

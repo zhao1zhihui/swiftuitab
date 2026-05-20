@@ -9,18 +9,22 @@ import SwiftUI
 
 @main
 struct swiftuiTabcellApp: App {
-    @StateObject private var session = AppSession.shared
-    @StateObject private var router = AppRouter(session: AppSession.shared)
+    @StateObject private var dependencies = AppDependencies()
 
     var body: some Scene {
         WindowGroup {
             RootTabView()
-                .environmentObject(session)
-                .environmentObject(router)
+                .environmentObject(dependencies)
+                .environmentObject(dependencies.session)
+                .environmentObject(dependencies.router)
                 .onOpenURL { url in
                     Task {
-                        await router.handleURL(url)
+                        await dependencies.router.handleURL(url)
                     }
+                }
+                .task {
+                    // 启动后从 TokenStore 恢复登录态；View 不关心 token 来自 Keychain 还是内存。
+                    await dependencies.session.restoreSession()
                 }
         }
     }

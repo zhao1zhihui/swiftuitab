@@ -1,7 +1,7 @@
 import Foundation
-import SwiftUI
 
-enum AppTab: String, CaseIterable, Hashable {
+/// Tab 是纯路由值对象，不持有 UI 状态；显式 nonisolated 避免 Swift 6 默认 MainActor 污染解析逻辑。
+nonisolated enum AppTab: String, CaseIterable, Hashable {
     case feed
     case discover
     case account
@@ -29,7 +29,7 @@ enum AppTab: String, CaseIterable, Hashable {
     }
 }
 
-struct BasicPageParams: Hashable {
+nonisolated struct BasicPageParams: Hashable {
     enum CloseType: String, Hashable {
         case myself
         case parent
@@ -63,7 +63,7 @@ struct BasicPageParams: Hashable {
     }
 }
 
-struct ProfileParams: Hashable {
+nonisolated struct ProfileParams: Hashable {
     let userId: String
     let userName: String?
 
@@ -81,7 +81,7 @@ struct ProfileParams: Hashable {
     }
 }
 
-struct ProductDetailParams: Hashable {
+nonisolated struct ProductDetailParams: Hashable {
     let productId: String
     let productName: String?
     let price: Double?
@@ -102,7 +102,7 @@ struct ProductDetailParams: Hashable {
     }
 }
 
-struct OrderDetailParams: Hashable {
+nonisolated struct OrderDetailParams: Hashable {
     let orderId: String
     let status: String?
 
@@ -120,11 +120,70 @@ struct OrderDetailParams: Hashable {
     }
 }
 
-enum AppRoute: Hashable, Identifiable {
+nonisolated struct BackNavigationPolicy: Equatable, Sendable {
+    /// 是否允许 NavigationStack 自己把 path 缩短。
+    /// false 表示系统返回入口需要先弹确认，确认后由 Router 再写入新的 path。
+    let allowsSystemBack: Bool
+
+    /// 是否允许 UIKit 交互返回手势进入 shouldBegin。
+    /// 这里通常保持 true，让 Router 能在手势开始前弹窗；如果设为 false，手势会被硬禁用。
+    let allowsInteractivePop: Bool
+
+    let blockedTitle: String
+    let blockedMessage: String
+
+    /// 横向 ScrollView 滑到最左边时，如何把右滑手势交给页面返回。
+    /// 这是全屏返回和业务横滑组件最容易冲突的地方，所以必须做成页面策略。
+    let horizontalScrollHandoff: HorizontalScrollBackHandoff
+
+    static let allow = BackNavigationPolicy(
+        allowsSystemBack: true,
+        allowsInteractivePop: true,
+        blockedTitle: "",
+        blockedMessage: "",
+        horizontalScrollHandoff: .directAtLeadingEdge
+    )
+
+    /// 返回确认页。
+    /// 这类页面不允许系统直接退出，但侧滑手势保持可用，由 Router 统一弹窗确认，用户点确认后再真正 pop。
+    static func locked(message: String) -> BackNavigationPolicy {
+        BackNavigationPolicy(
+            allowsSystemBack: false,
+            allowsInteractivePop: true,
+            blockedTitle: "当前页面不能直接返回",
+            blockedMessage: message,
+            horizontalScrollHandoff: .directAtLeadingEdge
+        )
+    }
+
+    static func allowed(horizontalScrollHandoff: HorizontalScrollBackHandoff) -> BackNavigationPolicy {
+        BackNavigationPolicy(
+            allowsSystemBack: true,
+            allowsInteractivePop: true,
+            blockedTitle: "",
+            blockedMessage: "",
+            horizontalScrollHandoff: horizontalScrollHandoff
+        )
+    }
+}
+
+nonisolated enum HorizontalScrollBackHandoff: String, Hashable, Sendable {
+    /// 横向列表已经在最左边时，本次右滑直接交给页面返回。
+    case directAtLeadingEdge
+
+    /// 横向列表已经在最左边时，第一次右滑只让列表处理，下一次右滑才交给页面返回。
+    case secondSwipeAtLeadingEdge
+}
+
+/// AppRoute 只描述“要去哪”，不直接操作 NavigationStack。
+/// 这样 URL 解析、鉴权拦截、单元测试都可以脱离 SwiftUI 主线程环境运行。
+nonisolated enum AppRoute: Hashable, Identifiable {
     case settings
     case orders
     case login
+    case routeNotFound(path: String)
     case basic(params: BasicPageParams)
+    case gestureConflictDemo(mode: HorizontalScrollBackHandoff)
     case productDetail(params: ProductDetailParams)
     case orderDetail(params: OrderDetailParams)
     case profile(params: ProfileParams)
@@ -137,8 +196,12 @@ enum AppRoute: Hashable, Identifiable {
             return "orders"
         case .login:
             return "login"
+        case .routeNotFound(let path):
+            return "route-not-found-\(path)"
         case .basic(let params):
             return "basic-\(params.step)-\(params.needLogin)-\(params.closeType.rawValue)-\(params.title ?? "")"
+        case .gestureConflictDemo(let mode):
+            return "gesture-conflict-demo-\(mode.rawValue)"
         case .productDetail(let params):
             return "product-\(params.productId)"
         case .orderDetail(let params):
@@ -152,7 +215,7 @@ enum AppRoute: Hashable, Identifiable {
         switch self {
         case .settings, .orders, .login, .profile:
             return .account
-        case .basic, .productDetail, .orderDetail:
+        case .routeNotFound, .basic, .gestureConflictDemo, .productDetail, .orderDetail:
             return .discover
         }
     }
@@ -167,14 +230,27 @@ enum AppRoute: Hashable, Identifiable {
             return false
         }
     }
+
+    var backPolicy: BackNavigationPolicy {
+        switch self {
+        case .basic(let params) where !params.canGestureBack:
+            return .locked(message: "请使用页面内的关闭按钮完成当前流程。")
+        case .gestureConflictDemo(let mode):
+            return .allowed(horizontalScrollHandoff: mode)
+        default:
+            return .allow
+        }
+    }
 }
 
-enum AppNavigationIntent {
+nonisolated enum AppNavigationIntent {
     case tab(AppTab)
     case route(AppRoute)
+    case notFound(path: String, originalURL: String)
 }
 
-struct URLParser {
+/// URLParser 是纯字符串解析工具，不能依赖 View 或 Router 状态。
+nonisolated struct URLParser {
     static func parse(_ url: URL) -> (path: String, params: [String: String]) {
         var params: [String: String] = [:]
 
@@ -211,38 +287,70 @@ struct URLParser {
     }
 }
 
-enum AppRouteParser {
+/// 深链到业务路由的集中翻译层。
+/// Router 只消费解析结果并处理鉴权/入栈，避免每个页面自己解析 URL。
+nonisolated enum AppRouteParser {
     static func parse(_ url: URL) -> AppNavigationIntent? {
         let (path, params) = URLParser.parse(url)
+        let resolvedIntent: AppNavigationIntent?
 
         switch path {
         case "/", "/home":
-            return .tab(.feed)
+            resolvedIntent = .tab(.feed)
         case "/discover":
-            return .tab(.discover)
+            resolvedIntent = .tab(.discover)
         case "/account":
-            return .tab(.account)
+            resolvedIntent = .tab(.account)
         case "/settings":
-            return .route(.settings)
+            resolvedIntent = .route(.settings)
         case "/orders":
-            return .route(.orders)
+            resolvedIntent = .route(.orders)
         case "/login":
-            return .route(.login)
+            resolvedIntent = .route(.login)
         case "/profile":
-            guard let profile = ProfileParams(from: params) else { return nil }
-            return .route(.profile(params: profile))
+            if let profile = ProfileParams(from: params) {
+                resolvedIntent = .route(.profile(params: profile))
+            } else {
+                resolvedIntent = nil
+            }
         case "/product":
-            guard let product = ProductDetailParams(from: params) else { return nil }
-            return .route(.productDetail(params: product))
+            if let product = ProductDetailParams(from: params) {
+                resolvedIntent = .route(.productDetail(params: product))
+            } else {
+                resolvedIntent = nil
+            }
+        case "/product/detail":
+            if let product = ProductDetailParams(from: params) {
+                resolvedIntent = .route(.productDetail(params: product))
+            } else {
+                resolvedIntent = nil
+            }
         case "/order":
-            guard let order = OrderDetailParams(from: params) else { return nil }
-            return .route(.orderDetail(params: order))
+            if let order = OrderDetailParams(from: params) {
+                resolvedIntent = .route(.orderDetail(params: order))
+            } else {
+                resolvedIntent = nil
+            }
+        case "/order/detail":
+            if let order = OrderDetailParams(from: params) {
+                resolvedIntent = .route(.orderDetail(params: order))
+            } else {
+                resolvedIntent = nil
+            }
         case "/addition/basic":
-            return .route(.basic(params: BasicPageParams(from: params)))
+            resolvedIntent = .route(.basic(params: BasicPageParams(from: params)))
         default:
-            break
+            resolvedIntent = parsePatternRoute(path: path, params: params)
         }
 
+        guard let resolvedIntent else {
+            return .notFound(path: path, originalURL: AppPrivacyRedactor.redactedURLString(url))
+        }
+
+        return validate(resolvedIntent, path: path, originalURL: url)
+    }
+
+    private static func parsePatternRoute(path: String, params: [String: String]) -> AppNavigationIntent? {
         if let userId = URLParser.matchPattern("/user/:userId", path: path)?["userId"] {
             var newParams = params
             newParams["userId"] = userId
@@ -265,5 +373,16 @@ enum AppRouteParser {
         }
 
         return nil
+    }
+
+    private static func validate(_ intent: AppNavigationIntent, path: String, originalURL: URL) -> AppNavigationIntent {
+        guard case .route(let route) = intent else {
+            return intent
+        }
+
+        guard AppRouteRegistry.shared.validate(route) else {
+            return .notFound(path: path, originalURL: AppPrivacyRedactor.redactedURLString(originalURL))
+        }
+        return intent
     }
 }

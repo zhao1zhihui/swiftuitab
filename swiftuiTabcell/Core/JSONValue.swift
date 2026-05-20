@@ -1,6 +1,6 @@
 import Foundation
 
-enum JSONValue: Codable {
+nonisolated enum JSONValue: Codable {
     case object([String: JSONValue])
     case array([JSONValue])
     case string(String)

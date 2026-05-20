@@ -1,6 +1,6 @@
 import Foundation
 
-enum LocalFeedDataStore {
+nonisolated enum LocalFeedDataStore {
     static var data: Data {
         Data(json.utf8)
     }

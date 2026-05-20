@@ -1,24 +1,24 @@
 import Foundation
 
-struct APIResponse<T: Codable>: Codable {
+nonisolated struct APIResponse<T: Codable>: Codable {
     let code: Int
     let message: String
     let data: T?
 }
 
-struct PageData<T: Codable>: Codable {
+nonisolated struct PageData<T: Codable>: Codable {
     let items: [T]
     let page: Int
     let pageSize: Int
     let hasMore: Bool
 }
 
-struct FeedRaw: Codable {
+nonisolated struct FeedRaw: Codable {
     let type: String
     let data: JSONValue
 }
 
-enum FeedItem: Codable {
+nonisolated enum FeedItem: Codable {
     case text(TextCard)
     case image(ImageCard)
     case action(ActionCard)
@@ -41,25 +41,25 @@ enum FeedItem: Codable {
     }
 }
 
-struct TextCard: Codable {
+nonisolated struct TextCard: Codable {
     let id: Int
     let title: String
     let subtitle: String?
 }
 
-struct ImageCard: Codable {
+nonisolated struct ImageCard: Codable {
     let id: Int
     let title: String
     let imageUrl: String
 }
 
-struct ActionCard: Codable {
+nonisolated struct ActionCard: Codable {
     let id: Int
     let title: String
     let buttonTitle: String
 }
 
-struct ProfileCard: Codable {
+nonisolated struct ProfileCard: Codable {
     let id: Int
     let name: String
     let intro: String

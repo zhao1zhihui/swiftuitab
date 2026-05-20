@@ -21,11 +21,11 @@ struct PagingContainerStyle {
     let stateViewStyle: FeedStateViewStyle
 
     static let feedDefault = PagingContainerStyle(
-        itemSpacing: 12,
-        horizontalPadding: 16,
-        bottomPadding: 16,
-        loadingMorePadding: 16,
-        loadMoreTriggerHeight: 24,
+        itemSpacing: AppSpacing.m,
+        horizontalPadding: AppSpacing.l,
+        bottomPadding: AppSpacing.l,
+        loadingMorePadding: AppSpacing.l,
+        loadMoreTriggerHeight: AppSpacing.xxl,
         loadMorePreloadDistance: 120,
         loadingText: "加载中...",
         emptyButtonTitle: "重新加载",

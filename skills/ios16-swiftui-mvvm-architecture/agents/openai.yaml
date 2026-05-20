@@ -1,0 +1,4 @@
+interface:
+  display_name: "iOS16 MVVM Architecture"
+  short_description: "审查并设计 iOS16+ SwiftUI MVVM 基座"
+  default_prompt: "Use $ios16-swiftui-mvvm-architecture to review or design an iOS16+ SwiftUI MVVM architecture base."

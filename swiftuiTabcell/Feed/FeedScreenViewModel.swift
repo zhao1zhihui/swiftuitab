@@ -1,11 +1,22 @@
- import SwiftUI
- import Combine
+import Foundation
+import Combine
 
 @MainActor
 final class FeedScreenViewModel: ObservableObject, PagingViewModel {
     struct AlertMessage: Identifiable {
-        let id = UUID()
-        let message: String
+        let presentation: AppErrorPresentation
+
+        var id: String {
+            presentation.id
+        }
+
+        var title: String {
+            presentation.title
+        }
+
+        var message: String {
+            presentation.message
+        }
     }
 
     typealias Item = FeedRow
@@ -18,8 +29,22 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
     @Published private(set) var loadMoreResetToken = 0
 
     var paging = PagingState(page: 0, pageSize: 10, hasMore: true)
-    private let provider: CardProvider = EnumCardProvider()
+    private let provider: CardProvider
+    private let observability: AppObservability
+    private let errorPresenter: any AppErrorPresenting
+    private let clock: any AppClock
     private let minimumLoadMoreIndicatorDuration: TimeInterval = 0.2
+
+    /// ViewModel 只依赖 Provider 协议，测试时可以直接注入假数据源。
+    init(provider: CardProvider,
+         observability: AppObservability = .makeConsole(),
+         errorPresenter: any AppErrorPresenting = DefaultAppErrorPresenter(),
+         clock: any AppClock = SystemAppClock()) {
+        self.provider = provider
+        self.observability = observability
+        self.errorPresenter = errorPresenter
+        self.clock = clock
+    }
 
     var canLoadMore: Bool {
         paging.hasMore && !items.isEmpty
@@ -55,12 +80,12 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
         isLoadingMore = true
         defer { isLoadingMore = false }
 
-        let startedAt = Date()
+        let startedAt = clock.now
         let result = await loadMore()
-        let elapsed = Date().timeIntervalSince(startedAt)
+        let elapsed = clock.now.timeIntervalSince(startedAt)
         if elapsed < minimumLoadMoreIndicatorDuration {
             let remaining = minimumLoadMoreIndicatorDuration - elapsed
-            try? await Task.sleep(nanoseconds: UInt64(remaining * 1_000_000_000))
+            try? await clock.sleep(for: remaining)
         }
         guard !Task.isCancelled else { return }
         applyLoadMore(result)
@@ -84,10 +109,12 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
             if case .cancelled = error {
                 return
             }
+            observability.report(error, source: "feed.refresh")
             if items.isEmpty {
-                pagePhase = .error(message: error.message)
+                let presentation = makeErrorPresentation(for: error, id: "feed.refresh")
+                pagePhase = .error(message: presentation.message)
             } else {
-                alertMessage = AlertMessage(message: error.message)
+                alertMessage = AlertMessage(presentation: makeErrorPresentation(for: error, id: "feed.refresh.toast"))
             }
         }
     }
@@ -100,16 +127,31 @@ final class FeedScreenViewModel: ObservableObject, PagingViewModel {
             if case .cancelled = error {
                 return
             }
+            observability.report(error, source: "feed.load_more")
             if items.isEmpty {
-                pagePhase = .error(message: error.message)
+                let presentation = makeErrorPresentation(for: error, id: "feed.load_more")
+                pagePhase = .error(message: presentation.message)
             } else {
-                alertMessage = AlertMessage(message: error.message)
+                alertMessage = AlertMessage(presentation: makeErrorPresentation(for: error, id: "feed.load_more.toast"))
             }
         }
     }
 
+    private func makeErrorPresentation(for error: APIError, id: String) -> AppErrorPresentation {
+        errorPresenter.presentation(for: error, id: id)
+    }
+
     private func showEvent(_ message: String) {
-        alertMessage = AlertMessage(message: message)
+        alertMessage = AlertMessage(
+            presentation: AppErrorPresentation(
+                id: "feed.event.\(message.hashValue)",
+                title: "提示",
+                message: message,
+                actionTitle: "知道了",
+                severity: .info,
+                isRetryable: false
+            )
+        )
     }
 
     private func bindCallbacks(to row: FeedRow) -> FeedRow {

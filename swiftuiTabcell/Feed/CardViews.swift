@@ -9,11 +9,11 @@ private struct CardContainer<Content: View>: View {
 
     var body: some View {
         content
-            .padding(16)
+            .padding(AppSpacing.l)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
+                RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
+                    .fill(AppColor.cardBackground)
             )
     }
 }
@@ -23,17 +23,17 @@ struct TextCardRowView: View {
 
     var body: some View {
         CardContainer {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: AppSpacing.s) {
                 Text(model.title)
-                    .font(.headline)
+                    .font(AppTypography.cardTitle)
                     .onTapGesture {
                         model.trigger(.tapTitle)
                     }
 
                 if let subtitle = model.subtitle {
                     Text(subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(AppTypography.cardBody)
+                        .foregroundStyle(AppColor.secondaryText)
                         .onTapGesture {
                             model.trigger(.tapSubtitle)
                         }
@@ -48,9 +48,9 @@ struct ImageCardRowView: View {
 
     var body: some View {
         CardContainer {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: AppSpacing.m) {
                 Text(model.title)
-                    .font(.headline)
+                    .font(AppTypography.cardTitle)
                     .onTapGesture {
                         model.trigger(.tapTitle)
                     }
@@ -61,8 +61,8 @@ struct ImageCardRowView: View {
                     }
 
                 Text(model.imageUrl)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.secondaryText)
                     .lineLimit(2)
                     .onTapGesture {
                         model.trigger(.tapURL)
@@ -84,22 +84,22 @@ struct ImageCardRowView: View {
             } placeholder: {
                 placeholderView
             }
-            .frame(height: 180)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .frame(height: AppSize.feedImageHeight)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.media, style: .continuous))
         } else {
             placeholderView
-                .frame(height: 180)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .frame(height: AppSize.feedImageHeight)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.media, style: .continuous))
         }
     }
 
     private var placeholderView: some View {
         ZStack {
             Rectangle()
-                .fill(Color(.systemGray5))
+                .fill(AppColor.placeholderBackground)
             Image(systemName: "photo")
                 .font(.system(size: 28))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColor.secondaryText)
         }
     }
 }
@@ -109,9 +109,9 @@ struct ActionCardRowView: View {
 
     var body: some View {
         CardContainer {
-            HStack(spacing: 16) {
+            HStack(spacing: AppSpacing.l) {
                 Text(model.title)
-                    .font(.headline)
+                    .font(AppTypography.cardTitle)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .onTapGesture {
                         model.trigger(.tapTitle)
@@ -131,18 +131,18 @@ struct ProfileCardRowView: View {
 
     var body: some View {
         CardContainer {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: AppSpacing.m) {
                 Text(model.name)
-                    .font(.headline)
+                    .font(AppTypography.cardTitle)
                     .onTapGesture {
                         model.trigger(.tapName)
                     }
 
                 Text(model.intro)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(AppTypography.cardBody)
+                    .foregroundStyle(AppColor.secondaryText)
 
-                HStack(spacing: 12) {
+                HStack(spacing: AppSpacing.m) {
                     Button(model.followTitle) {
                         model.trigger(.tapFollow)
                     }

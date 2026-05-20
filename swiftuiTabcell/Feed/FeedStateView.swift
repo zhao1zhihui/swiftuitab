@@ -9,10 +9,10 @@ struct FeedStateViewStyle {
 
     static let `default` = FeedStateViewStyle(
         iconName: "tray",
-        iconSize: 32,
+        iconSize: AppSize.stateIcon,
         iconColor: .secondary,
-        spacing: 16,
-        padding: 24
+        spacing: AppSpacing.l,
+        padding: AppSpacing.xxl
     )
 }
 
@@ -29,8 +29,8 @@ struct FeedStateView: View {
                 .foregroundStyle(style.iconColor)
 
             Text(title)
-                .font(.body)
-                .foregroundStyle(.secondary)
+                .font(AppTypography.stateMessage)
+                .foregroundStyle(AppColor.secondaryText)
                 .multilineTextAlignment(.center)
 
             Button(buttonTitle, action: action)

@@ -1,6 +1,6 @@
 import Foundation
 
-private enum AuthAPI {
+nonisolated private enum AuthAPI {
     static func refreshToken(_ refreshToken: String) -> NetworkEndpoint {
         let requestBody = RefreshRequestBody(refreshToken: refreshToken)
         let data = try? JSONEncoder().encode(requestBody)
@@ -14,7 +14,7 @@ private enum AuthAPI {
     }
 }
 
-enum FeedAPI {
+nonisolated enum FeedAPI {
     case feed(page: Int, pageSize: Int)
 
     var endpoint: NetworkEndpoint {
@@ -32,24 +32,30 @@ enum FeedAPI {
     }
 }
 
-@MainActor
-final class NetworkService {
-    static let shared = NetworkService(session: AppSession.shared)
-
-    private let baseURL = URL(string: "https://stub.swiftui-tabcell.local")!
+/// 非 UI 网络服务。
+/// 项目开启了 Swift 6 默认 MainActor 隔离，所以这里显式 nonisolated，确保请求构建、传输、解码不被主 actor 绑定。
+/// 该类型只持有不可变依赖；可变登录态交给 AppSession 的 MainActor 管理，因此可以安全跨任务传递。
+nonisolated final class NetworkService: @unchecked Sendable {
+    private let baseURL: URL
     private let transport: any NetworkTransport
     private let logger: any NetworkLogging
     private let crypto: any PayloadCrypto
     private let session: AppSession
+    private let uuidGenerator: any UUIDGenerating
 
-    init(transport: any NetworkTransport = LocalNetworkTransport(),
+    /// 所有可变基础设施都从外部注入，方便测试时替换 transport/logger/crypto/session。
+    init(baseURL: URL,
+         transport: any NetworkTransport = LocalNetworkTransport(),
          logger: any NetworkLogging = ConsoleNetworkLogger(),
          crypto: any PayloadCrypto = PassthroughCrypto(),
-         session: AppSession) {
+         session: AppSession,
+         uuidGenerator: any UUIDGenerating = SystemUUIDGenerator()) {
+        self.baseURL = baseURL
         self.transport = transport
         self.logger = logger
         self.crypto = crypto
         self.session = session
+        self.uuidGenerator = uuidGenerator
     }
 
     func request(_ target: FeedAPI) async -> APIResult<Data> {
@@ -81,6 +87,7 @@ final class NetworkService {
                 logger.logResponse(response, request: urlRequest)
 
                 if response.statusCode == 401, endpoint.requiresAuthentication, retryOnAuthFailure {
+                    // token 刷新由 AppSession 串行协调；刷新成功后只重试一次，防止无限 401 循环。
                     let refreshed = await session.refreshAccessTokenIfNeeded { [weak self] refreshToken in
                         guard let self else {
                             return .failure(.unknown("网络服务已释放，无法刷新 token"))
@@ -88,7 +95,7 @@ final class NetworkService {
                         return await self.refreshTokens(with: refreshToken)
                     }
                     guard refreshed else {
-                        session.logout()
+                        await session.logout()
                         return .failure(.server(code: 401, message: "登录已过期，请重新登录"))
                     }
                     return await request(endpoint, retryOnAuthFailure: false)
@@ -107,6 +114,7 @@ final class NetworkService {
         }
     }
 
+    /// 只在需要鉴权时跨 actor 读取 accessToken，其余请求构建逻辑保持在非 UI 上下文。
     private func makeURLRequest(for endpoint: NetworkEndpoint) async -> APIResult<URLRequest> {
         var components = URLComponents(url: baseURL.appendingPathComponent(endpoint.path), resolvingAgainstBaseURL: false)
         components?.queryItems = endpoint.queryItems.isEmpty ? nil : endpoint.queryItems
@@ -117,13 +125,15 @@ final class NetworkService {
 
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
+        request.timeoutInterval = endpoint.timeoutInterval
+        request.setValue(uuidGenerator.makeUUID().uuidString, forHTTPHeaderField: "X-Request-Id")
 
         endpoint.headers.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
 
         if endpoint.requiresAuthentication {
-            let accessToken = session.accessToken
+            let accessToken = await session.accessToken
             if let accessToken {
                 request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
             }
@@ -140,6 +150,7 @@ final class NetworkService {
         return .success(request)
     }
 
+    /// refresh 接口复用同一套 request/transport/crypto 流程，但它本身不再触发二次 refresh。
     private func refreshTokens(with refreshToken: String) async -> APIResult<AuthTokens> {
         let endpoint = AuthAPI.refreshToken(refreshToken)
         let requestResult = await makeURLRequest(for: endpoint)
@@ -180,71 +191,6 @@ final class NetworkService {
                     return .failure(.unknown("刷新 token 解析失败: \(error.localizedDescription)"))
                 }
             }
-        }
-    }
-}
-
-private struct LocalFeedEnvelope<Item: Codable>: Codable {
-    let code: Int
-    let message: String
-    let data: LocalFeedPage<Item>?
-}
-
-private struct LocalFeedPage<Item: Codable>: Codable {
-    let items: [Item]
-}
-
-@MainActor
-final class FeedRepository {
-    func fetchFeed(page: Int, pageSize: Int) async -> APIResult<PageResult<FeedItem>> {
-        let result = await NetworkService.shared.request(.feed(page: page, pageSize: pageSize))
-        switch result {
-        case .success(let data):
-            return makePageResult(from: data, itemType: FeedItem.self, page: page, pageSize: pageSize)
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-
-    func fetchFeedRaw(page: Int, pageSize: Int) async -> APIResult<PageResult<FeedRaw>> {
-        let result = await NetworkService.shared.request(.feed(page: page, pageSize: pageSize))
-        switch result {
-        case .success(let data):
-            return makePageResult(from: data, itemType: FeedRaw.self, page: page, pageSize: pageSize)
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-
-    private func makePageResult<Item: Codable>(from data: Data,
-                                               itemType: Item.Type,
-                                               page: Int,
-                                               pageSize: Int) -> APIResult<PageResult<Item>> {
-        do {
-            _ = itemType
-            let response = try JSONDecoder().decode(LocalFeedEnvelope<Item>.self, from: data)
-            guard response.code == 0 else {
-                return .failure(.server(code: response.code, message: response.message))
-            }
-            guard let allItems = response.data?.items else {
-                return .failure(.emptyData)
-            }
-            let startIndex = page * pageSize
-            guard startIndex < allItems.count else {
-                return .success(PageResult(items: [], page: page, pageSize: pageSize, hasMore: false))
-            }
-            let endIndex = min(startIndex + pageSize, allItems.count)
-            let pagedItems = Array(allItems[startIndex..<endIndex])
-            return .success(
-                PageResult(
-                    items: pagedItems,
-                    page: page,
-                    pageSize: pageSize,
-                    hasMore: endIndex < allItems.count
-                )
-            )
-        } catch {
-            return .failure(.decoding(error.localizedDescription))
         }
     }
 }
